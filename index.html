@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Две звезды — одна судьба | Дугоҳи ситора — як тақдир</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            background-color: #050814;
+            color: #f3e5ab;
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Переключатель языка */
+        .lang-switch {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 10;
+            display: flex;
+            background: rgba(15, 20, 35, 0.9);
+            border: 1px solid rgba(212, 175, 55, 0.6);
+            border-radius: 20px;
+            padding: 3px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: #b3b3b3;
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .lang-btn.active {
+            background: #d4af37;
+            color: #03050b;
+            font-weight: 600;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 0;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .card {
+            background: rgba(10, 15, 30, 0.88);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 35px 25px;
+            width: 100%;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.9), inset 0 0 25px rgba(212, 175, 55, 0.08);
+            backdrop-filter: blur(12px);
+            margin-bottom: 20px;
+        }
+
+        h1, h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 300;
+            color: #ffffff;
+        }
+
+        .chapter-title {
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #d4af37;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .main-title {
+            font-size: 2.3rem;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            font-weight: 300;
+            letter-spacing: 3px;
+            color: #d1d1d1;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+        }
+
+        p {
+            font-size: 0.95rem;
+            font-weight: 300;
+            line-height: 1.7;
+            color: #e6e6e6;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, rgba(212,175,55,0.3), rgba(150,120,30,0.15));
+            border: 1px solid #d4af37;
+            color: #f3e5ab;
+            padding: 14px 30px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+            margin-top: 15px;
+        }
+
+        .couple {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.8rem;
+            color: #ffffff;
+            margin: 20px 0;
+            line-height: 1.2;
+        }
+
+        .couple span {
+            display: block;
+            font-size: 1.8rem;
+            color: #d4af37;
+            font-style: italic;
+            margin: 5px 0;
+        }
+
+        .countdown {
+            display: flex;
+            justify-content: space-around;
+            margin: 25px 0;
+            background: rgba(5, 8, 18, 0.6);
+            border-radius: 12px;
+            padding: 15px 10px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .time-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .time-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6rem;
+            color: #d4af37;
+            font-weight: 600;
+        }
+
+        .time-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #bbb;
+            margin-top: 4px;
+        }
+
+        .detail-row {
+            margin: 20px 0;
+            border-top: 1px solid rgba(212, 175, 55, 0.25);
+            padding-top: 15px;
+        }
+
+        .detail-title {
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #d4af37;
+            margin-bottom: 5px;
+        }
+
+        .detail-desc {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            color: #ffffff;
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 14px;
+            border-radius: 25px;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .btn-map {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.6);
+            color: #f3e5ab;
+        }
+
+        .btn-rsvp {
+            background: linear-gradient(135deg, #d4af37, #aa8c2c);
+            border: none;
+            color: #03050b;
+            font-weight: 600;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .btn-rsvp.confirmed {
+            background: transparent;
+            border: 1px solid #4CAF50;
+            color: #4CAF50;
+            box-shadow: none;
+        }
+
+        .signature {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.3rem;
+            color: #d4af37;
+            margin-top: 30px;
+            letter-spacing: 1px;
+        }
+
+        .scroll-down {
+            margin-top: 30px;
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #d4af37;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 0.5; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="spaceCanvas"></canvas>
+
+    <!-- Переключатель языка -->
+    <div class="lang-switch">
+        <button class="lang-btn active" id="btnRu" onclick="setLanguage('ru')">RU</button>
+        <button class="lang-btn" id="btnTj" onclick="setLanguage('tj')">TJ</button>
+    </div>
+
+    <div class="container">
+        
+        <!-- ГЛАВА 1 -->
+        <section id="ch1" class="visible">
+            <div class="card">
+                <div class="chapter-title" data-ru="Глава I" data-tj="Бобы I">Глава I</div>
+                <h1 class="main-title" data-ru="Две звезды" data-tj="Дугоҳи ситора">Две звезды</h1>
+                <p class="subtitle" data-ru="Одна судьба" data-tj="Як тақдир">Одна судьба</p>
+                <p data-ru="В бесконечной вселенной среди миллионов огней две независимые звезды начали свое движение навстречу друг другу сквозь время и пространство." data-tj="Дар фазои беохир миёни миллионҳо рӯшноӣ ду ситораи мустақил ҳаракати худро ба сӯи ҳамдигар дар тӯли замон ва фазо оғоз карданд.">В бесконечной вселенной среди миллионов огней две независимые звезды начали свое движение навстречу друг другу сквозь время и пространство.</p>
+                <button class="btn" onclick="scrollToSection('ch2')" data-ru="Открыть историю" data-tj="Кушодани таърих">Открыть историю</button>
+                <div class="scroll-down" data-ru="↓ Листайте вниз ↓" data-tj="↓ Ба поён варақ занед ↓">↓ Листайте вниз ↓</div>
+            </div>
+        </section>
+
+        <!-- ГЛАВА 2 -->
+        <section id="ch2">
+            <div class="card">
+                <div class="chapter-title" data-ru="Глава II" data-tj="Бобы II">Глава II</div>
+                <h2 data-ru="Притяжение" data-tj="Кашиш">Притяжение</h2>
+                <br>
+                <p data-ru="Шли годы, галактики меняли свои узоры, но сила взаимного притяжения оказалась сильнее любых преград. Случайная искра превратилась в вечное пламя." data-tj="Солҳо гузаштанд, галактикаҳо нақшҳои худро иваз карданд, аммо қувваи ҷалби муқобил аз ҳама монеаҳо тавонотар баромад.">Шли годы, галактики меняли свои узоры, но сила взаимного притяжения оказалась сильнее любых преград. Случайная искра превратилась в вечное пламя.</p>
+                <p data-ru="И настал момент, когда их орбиты слились воедино, чтобы больше никогда не разлучаться." data-tj="Ва лаҳзае فرا расид, ки мадорҳои онҳо ба якдигар пайвастанд, то дигар ҳеҷ гоҳ ҷудо нашаванд.">И настал момент, когда их орбиты слились воедино, чтобы больше никогда не разлучаться.</p>
+                <button class="btn" onclick="scrollToSection('ch3')" data-ru="К приглашению" data-tj="Ба даъватнома">К приглашению</button>
+            </div>
+        </section>
+
+        <!-- ГЛАВА 3 -->
+        <section id="ch3">
+            <div class="card">
+                <div class="chapter-title" data-ru="Глава III" data-tj="Бобы III">Глава III</div>
+                <div class="subtitle" style="margin-bottom: 10px;" data-ru="Приглашение на свадьбу" data-tj="Даъватнома ба тӯй">Приглашение на свадьбу</div>
+                
+                <div class="couple">
+                    Амин
+                    <span>&</span>
+                    [ Имя невесты ]
+                </div>
+
+                <p data-ru="С огромной радостью и трепетом приглашаем вас разделить с нами самый главный и светлый день нашей жизни." data-tj="Бо шодии бузург ва ҳаяҷон шуморо даъват мекунем, ки рӯзи муҳимтарини ҳаёти моро бо мо шарик шавед.">С огромной радостью и трепетом приглашаем вас разделить с нами самый главный и светлый день нашей жизни.</p>
+
+                <!-- Таймер -->
+                <div class="countdown">
+                    <div class="time-box">
+                        <span class="time-num" id="days">00</span>
+                        <span class="time-label" data-ru="Дней" data-tj="Рӯз">Дней</span>
+                    </div>
+                    <div class="time-box">
+                        <span class="time-num" id="hours">00</span>
+                        <span class="time-label" data-ru="Часов" data-tj="Соат">Часов</span>
+                    </div>
+                    <div class="time-box">
+                        <span class="time-num" id="minutes">00</span>
+                        <span class="time-label" data-ru="Минут" data-tj="Дақиқа">Минут</span>
+                    </div>
+                    <div class="time-box">
+                        <span class="time-num" id="seconds">00</span>
+                        <span class="time-label" data-ru="Секунд" data-tj="Сония">Секунд</span>
+                    </div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-title" data-ru="Дата торжества" data-tj="Санаи тӯй">Дата торжества</div>
+                    <div class="detail-desc" data-ru="15 июля 2026 года" data-tj="15 июли соли 2026">15 июля 2026 года</div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-title" data-ru="Место проведения" data-tj="Ҷои баргузорӣ">Место проведения</div>
+                    <div class="detail-desc">Magozai Khurokvori, Khonabad</div>
+                </div>
+
+                <div class="actions">
+                    <button class="btn-action btn-map" onclick="openMap()" data-ru="📍 Открыть карту проезда" data-tj="📍 Кушодани харита">📍 Открыть карту проезда</button>
+                    <button class="btn-action btn-rsvp" id="rsvpBtn" onclick="confirmPresence()" data-ru="✨ Подтвердить присутствие" data-tj="✨ Тасдиқи иштирок">✨ Подтвердить присутствие</button>
+                </div>
+
+                <div class="signature">
+                    Оилаи Одинаевхо
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        let currentLang = 'ru';
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('btnRu').classList.toggle('active', lang === 'ru');
+            document.getElementById('btnTj').classList.toggle('active', lang === 'tj');
+
+            document.querySelectorAll('[data-ru]').forEach(el => {
+                const text = el.getAttribute(`data-${lang}`);
+                if (text) {
+                    el.innerText = text;
+                }
+            });
+        }
+
+        // Яркий звездный фон с сиянием
+        const canvas = document.getElementById('spaceCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let particles = [];
+        const numParticles = 600;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = (Math.random() - 0.5) * width * 1.5 + width / 2;
+                this.y = (Math.random() - 0.5) * height * 1.5 + height / 2;
+                this.z = Math.random() * width;
+                this.size = Math.random() * 2 + 0.8;
+                this.baseAlpha = Math.random() * 0.8 + 0.2;
+                this.color = Math.random() > 0.8 ? '#ffd700' : '#ffffff';
+            }
+            update() {
+                this.z -= 0.5;
+                if (this.z <= 0) {
+                    this.z = width;
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                }
+            }
+            draw() {
+                let k = 300 / this.z;
+                let px = (this.x - width / 2) * k + width / 2;
+                let py = (this.y - height / 2) * k + height / 2;
+
+                if (px >= 0 && px <= width && py >= 0 && py <= height) {
+                    let pSize = Math.max(0, this.size * k);
+                    ctx.fillStyle = this.color;
+                    ctx.globalAlpha = Math.min(1, this.baseAlpha * (k * 0.9));
+                    ctx.beginPath();
+                    ctx.arc(px, py, pSize, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+
+        for (let i = 0; i < numParticles; i++) {
+            particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.fillStyle = '#050814';
+            ctx.fillRect(0, 0, width, height);
+
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+
+        const weddingDate = new Date(2026, 6, 15, 17, 0, 0).getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = weddingDate - now;
+
+            if (distance < 0) return;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerText = String(days).padStart(2, '0');
+            document.getElementById("hours").innerText = String(hours).padStart(2, '0');
+            document.getElementById("minutes").innerText = String(minutes).padStart(2, '0');
+            document.getElementById("seconds").innerText = String(seconds).padStart(2, '0');
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // Точная ссылка на геолокацию ресторана
+        function openMap() {
+            window.open('https://maps.app.goo.gl/vGVMo8J4CaPqj7pp6', '_blank');
+        }
+
+        function confirmPresence() {
+            const btn = document.getElementById('rsvpBtn');
+            if (currentLang === 'tj') {
+                btn.innerText = "✓ Ташаккур! Иштирок тасдиқ шуд";
+            } else {
+                btn.innerText = "✓ Спасибо! Присутствие подтверждено";
+            }
+            btn.classList.add('confirmed');
+            btn.disabled = true;
+        }
+    </script>
+</body>
+</html>
